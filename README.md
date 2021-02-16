@@ -45,7 +45,7 @@ public class Order extends org.apache.geode.demo.nw.data.avro.generated.__Order 
 }
 ```
 
-![Kryo Code Generator Demo](images/app-kryo-codegen.jpg)
+![Kryo Code Generator Demo](images/geode-app-kryo-codegen.jpg)
 
 ## Runng This Bundle
 
