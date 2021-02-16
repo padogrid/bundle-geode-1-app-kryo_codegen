@@ -1,1 +1,1 @@
-This bundle serves as a template for creating a new Geode bundle. Run `show_bundle bundle-geode-template` to see instructions.
+This bundle provides step-by-step instructions for generating and deploying Avro and `KryoSerializer` in Geode/GemFire. Using PadoGrid's code generator, you can on the fly generate and deploy Avro wrapper classes and the correspoinding Kryo serializer.

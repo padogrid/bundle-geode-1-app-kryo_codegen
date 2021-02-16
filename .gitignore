@@ -10,6 +10,11 @@ buildNumber.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
 
+# Eclipse
+.classpath
+.project
+.settings
+
 # vi
 *.swp
 
@@ -22,7 +27,7 @@ lib
 plugins
 
 # PadoGrid workspace directories
-apps
+#apps
 clusters
 docker
 k8s
@@ -35,3 +40,4 @@ lib
 desktop
 setenv.sh0
 build
+src

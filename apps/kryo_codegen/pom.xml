@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.geode.addon</groupId>
+	<version>1.0.0</version>
+	<artifactId>app-kryo-codegen-geode</artifactId>
+	<packaging>jar</packaging>
+	<name>${project.artifactId}</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<padogrid.version>0.9.5-SNAPSHOT</padogrid.version>
+		<!-- <padogrid.version>${env.PADOGRID_VERSION}</padogrid.version>-->
+		<geode.version>1.13.1</geode.version>
+		<avro.version>1.9.2</avro.version>
+	</properties>
+
+	<dependencies>
+		<!-- PadoGrid for KryoGenerator -->
+        <dependency>
+                <groupId>padogrid.addon</groupId>
+                <artifactId>padogrid-tools</artifactId>
+                <version>${padogrid.version}</version>
+        </dependency>
+        <!-- Geode -->
+        <dependency>
+            <groupId>org.apache.geode</groupId>
+            <artifactId>geode-core</artifactId>
+            <version>${geode.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geode</groupId>
+            <artifactId>geode-serialization</artifactId>
+            <version>${geode.version}</version>
+        </dependency>
+
+		<!-- Avro -->
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro</artifactId>
+			<version>${avro.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro-tools</artifactId>
+			<version>${avro.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro-compiler</artifactId>
+			<version>${avro.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.esotericsoftware</groupId>
+			<artifactId>kryo</artifactId>
+			<version>4.0.0</version>
+		</dependency>
+
+		<!-- For ingesting fake data -->
+		<dependency>
+			<groupId>com.github.javafaker</groupId>
+			<artifactId>javafaker</artifactId>
+			<version>0.17.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20200518</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.10</version>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<version>${project.version}</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${project.basedir}/lib</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<overWriteReleases>true</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>lib</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Avro class generator -->
+			<plugin>
+				<groupId>org.apache.avro</groupId>
+				<artifactId>avro-maven-plugin</artifactId>
+				<version>${avro.version}</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>schema</goal>
+						</goals>
+						<configuration>
+							<testSourceDirectory>${project.basedir}/src/main/resources/</testSourceDirectory>
+							<testOutputDirectory> ${project.basedir}/src/main/java</testOutputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+                        <plugin>
+                                <artifactId>maven-assembly-plugin</artifactId>
+                                <version>2.5.5</version>
+                                <executions>
+                                        <execution>
+                                                <id>padogrid-dist</id>
+                                                <goals>
+                                                        <goal>attached</goal>
+                                                </goals>
+                                                <phase>package</phase>
+                                                <configuration>
+                                                        <descriptors>
+                                                                <descriptor>assembly-descriptor.xml</descriptor>
+                                                        </descriptors>
+                                                        <finalName>${project.name}-${project.version}</finalName>
+                                                        <appendAssemblyId>false</appendAssemblyId>
+                                                        <outputDirectory>target/assembly</outputDirectory>
+                                                        <tarLongFileMode>gnu</tarLongFileMode>
+                                                </configuration>
+                                        </execution>
+                                </executions>
+                        </plugin>
+		</plugins>
+	</build>
+</project>
