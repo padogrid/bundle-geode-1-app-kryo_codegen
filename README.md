@@ -263,7 +263,7 @@ src/main
     └── order.avsc
 ```
 
-### 6. Compile the generated `KryoSerailaizer`.
+### 6. Compile the generated `KryoSerializer`.
 
 Once again, repackage the `lib/app-kryo-codegen-geode-1.0.0.jar` file by running Maven. This time, the jar file also includes the generated classes including `KryoSerializer` which we need to register with Geode/GemFire.
 
@@ -287,7 +287,7 @@ mvn package
 
 ### 8. Build and deploy a distribution tarball.
 
-The  `lib/app-kryo-codegen-geode-1.0.0.jar` is now ready to be deployed to the Geode/GemFire cluster. Since we are using Kryo and Avro, we also need to deploy their jar files along with all the dependencies. The Maven build step also generates a tarball, `app-kryo-codegen-geode-1-dist-1.0.0.tar.gz`, that contains all the jar files. We need to untar the tarball in the workspace's `plugins` directory so that the jar files can be picked up by all the apps and clusters running in the same workspace.
+The  `lib/app-kryo-codegen-geode-1.0.0.jar` is now ready to be deployed to the Geode/GemFire cluster. Since we are using Kryo and Avro, we also need to deploy their jar files along with all the dependencies. The previous Maven build step also generated a tarball, `app-kryo-codegen-geode-1.0.0.tar.gz`, that contains all the jar files. We need to untar the tarball in the workspace's `plugins` directory so that the jar files can be picked up by all the apps and clusters running in the same workspace.
 
 ```bash
 # Deploy the generated tarball in the workspace plugins directory.
