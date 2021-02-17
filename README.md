@@ -12,7 +12,7 @@ install_bundle -download bundle-geode-1-app-kryo_codegen
 
 Kryo allows you to ingest POJO objects to Geode/GemFire without addding any Geode/GemFire dependencies. In this bundle, we introduce PadoGrid's code generator that generates `KryoSerializer` required by Geode/GemFire for registering custom serializers. To register POJO classes in Geode/GemFire, you must register each POJO class individually, making the Geode/GemFire configuration process difficult and error prone. PadoGrid's Kryo code generator simplifies the registration process by generating the `KryoSerializer` class that automatically groups all the POJO classes in a given package. Instead of registering each POJO class individually, you would just register `KryoSerializer`. 
 
-The Kryo code generator also includes a wrapper class generator which extends POJO classes to allow you to override class methods as needed. This is particularly useful if you generate domain classes using IDL-based serialization tools such as Avro. Avro creates a compact binary data format that is ideal for storing POJO objects in Geode/GemFire. Avro, however, only supports primitive types and leaves the marshalling and unmarshalling chore of non-primitive types to the application. To close this gap, the wrapper class generator generates wrapper classes in which you can add your custom marshalling and unmarshalling code without affecting the Avro-generated code.
+The Kryo code generator also includes a wrapper class generator which extends POJO classes to allow you to override class methods as needed. This is particularly useful if you generate domain classes using IDL-based serialization tools such as Avro. Avro creates a compact binary data format that is ideal for storing POJO objects in Geode/GemFire. Avro, however, only supports primitive types and leaves the chore of marshalling and unmarshalling non-primitive types to the application. To close this gap, the wrapper class generator is provided to generate wrapper classes in which you can add your custom marshalling and unmarshalling code without affecting the Avro-generated code. 
 
 For example, Avro does not support the `Date` class. To store a `Date` object, you would need to store its `long` value, i.e., `Date.getTime()` as the `long` type and the `logicalType` of `timestamp-millis` as follows.
 
@@ -201,7 +201,7 @@ mvn package
 
 ### 5. Generate KryoSerializer for the generated wrapper classes.
 
-With the wrapper classes in the jar file, we can now generate the KyroSerializer class that properly registers all the wrapper classes in Geode/GemFire. Execute the following command to generate `KryoSerializer`.
+With the wrapper classes in the jar file, we can now generate the `KyroSerializer` class that properly registers all the wrapper classes in Geode/GemFire. Execute the following command to generate `KryoSerializer`.
 
 ```bash
 t_generate_kryo_serializer -id 1200 \
@@ -265,7 +265,7 @@ src/main
 
 ### 6. Compile the generated `KryoSerializer`.
 
-Once again, repackage the `lib/app-kryo-codegen-geode-1.0.0.jar` file by running Maven. This time, the jar file also includes the generated classes including `KryoSerializer` which we need to register with Geode/GemFire.
+Once again, repackage the `lib/app-kryo-codegen-geode-1.0.0.jar` file by running Maven. At this time, the jar file also includes the generated classes including `KryoSerializer` which we need to register with Geode/GemFire.
 
 ```bash
 mvn package
