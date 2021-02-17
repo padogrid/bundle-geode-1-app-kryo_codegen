@@ -52,7 +52,7 @@ public class Order extends org.apache.geode.demo.nw.data.avro.generated.__Order 
 - PadoGrid 0.9.5-SNAPSHOT+ (02/16/2021)
 - Maven 3.x
 
-## Runng This Bundle
+## Runnig This Bundle
 
 If you want to quickly test the bundle, you can execute the following and jump to [Step 9](#9-configure-geodegemfire-configuration-file-geodegemfirexml-with-the-kryoserializer-class). The `build_app` carries out the steps 1 to 8 in sequence. It is recommended, however, that you go through the entire steps to get familiar with the code generation and deployment process.
 
