@@ -54,7 +54,8 @@ public class Order extends org.apache.geode.demo.nw.data.avro.generated.__Order 
 
 ## Runnig This Bundle
 
-If you want to quickly test the bundle, you can execute the following and jump to [Step 9](#9-configure-geodegemfire-configuration-file-geodegemfirexml-with-the-kryoserializer-class). The `build_app` carries out the steps 1 to 8 in sequence. It is recommended, however, that you go through the entire steps to get familiar with the code generation and deployment process.
+If you want to quickly test the bundle, you can execute the following and jump to [Step 9](#9-configure-geodegemfire-configuration-file-cachexml-with-the-kryoserializer-class
+). The `build_app` carries out the steps 1 to 8 in sequence. It is recommended, however, that you go through the entire steps to get familiar with the code generation and deployment process.
 
 ```bash
 cd_app kryo_codegen; cd bin_sh
@@ -67,7 +68,9 @@ If you have a schema registry with Debezium running, then you can use the `-regi
 ./build_app -?
 ```
 
-### 1. Place Avro schema files in the `src/main/resources` directory.
+:exclamation: You can also ingest data into a Pado cluster. Please see the section [Ingesting Data into Pado Cluster](#ingesting-data-into-pado-cluster) for details. With data in Pado, you can use the Pado Desktop to browse data.
+
+### 1. Place Avro schema files in the `src/main/resources` directory
 
 This bundle includes the following example schema files.
 
@@ -118,7 +121,7 @@ Note that we do not have any Java code in the source directory. We start with a 
 
 ```
 
-### 2. Generate Avro classes using the Avro schema files.
+### 2. Generate Avro classes using the Avro schema files
 
 ```bash
 mvn package
@@ -151,7 +154,7 @@ lib
 └── app-kryo-codegen-geode-1.0.0.jar
 ```
 
-### 3. Generate Avro wrapper classes. 
+### 3. Generate Avro wrapper classes
 
 Run the PadoGrid's `t_generate_wrappers` command to generate the wrapper classes that extend the generated Avro classes. You can use the Avro classes that were generated in the previous setp as they are but it is recommended that you generate the wrapper classes so that you can override the Avro class methods as needed. Let's generate wrapper classes by executing the following:
 
@@ -191,7 +194,7 @@ src/main
     └── order.avsc
 ```
 
-### 4. Compile the wrapper classes and create a jar file.
+### 4. Compile the wrapper classes and create a jar file
 
 The generated wrapper classes need to be compiled and packaged into a jar file. Run Maven again to generate the `lib/app-kryo-codegen-geode-1.0.0.jar` file that includes the wrapper classes.
 
@@ -199,7 +202,7 @@ The generated wrapper classes need to be compiled and packaged into a jar file. 
 mvn package
 ```
 
-### 5. Generate KryoSerializer for the generated wrapper classes.
+### 5. Generate KryoSerializer for the generated wrapper classes
 
 With the wrapper classes in the jar file, we can now generate the `KyroSerializer` class that properly registers all the wrapper classes in Geode/GemFire. Execute the following command to generate `KryoSerializer`.
 
@@ -263,7 +266,7 @@ src/main
     └── order.avsc
 ```
 
-### 6. Compile the generated `KryoSerializer`.
+### 6. Compile the generated `KryoSerializer`
 
 Once again, repackage the `lib/app-kryo-codegen-geode-1.0.0.jar` file by running Maven. At this time, the jar file also includes the generated classes including `KryoSerializer` which we need to register with Geode/GemFire.
 
@@ -271,7 +274,7 @@ Once again, repackage the `lib/app-kryo-codegen-geode-1.0.0.jar` file by running
 mvn package
 ```
 
-### 7. Build client apps.
+### 7. Build client apps
 
 This bundle includes data ingestion clients that use the generated wrapper classes to ingest data into Geode/GemFire. The source code is located in the `src_provided` directory. Let's copy it to the `src` directory and rebuild the jar file.
 
@@ -285,7 +288,7 @@ mvn package
 
 :information_source: Take a look at `src_provided/org/apache/geode/demo/nw/data/avro/Order.java`. It extends the Avro generated class `__Order` to include `Date` objects.
 
-### 8. Build and deploy a distribution tarball.
+### 8. Build and deploy a distribution tarball
 
 The  `lib/app-kryo-codegen-geode-1.0.0.jar` is now ready to be deployed to the Geode/GemFire cluster. Since we are using Kryo and Avro, we also need to deploy their jar files along with all the dependencies. The previous Maven build step also generated a tarball, `app-kryo-codegen-geode-1.0.0.tar.gz`, that contains all the jar files. We need to untar the tarball in the workspace's `plugins` directory so that the jar files can be picked up by all the apps and clusters running in the same workspace.
 
@@ -296,12 +299,14 @@ tar -C $PADOGRID_WORKSPACE/plugins/ -xzf target/assembly/app-kryo-codegen-geode-
 
 :information_source: Note that you would also need to deploy the tarball to external apps that connect to your Geode/GemFire cluster. For example, to deploy it to Kafka Connect, untar it in the connector's plugin directory.
 
-### 9. Configure Geode/GemFire configuration file (`cache.xml`) with the `KryoSerializer` class.
+### 9. Configure Geode/GemFire configuration file (`cache.xml`) with the `KryoSerializer` class
 
 Place the serialization information in the current cluster's Geode/GemFire configuration file.
 
 ```bash
-vi $CLUSTER_DIR/etc/cache.xml
+# Switch to your cluster. Default cluster is mygeode
+switch_cluster your_cluster
+vi etc/cache.xml
 ```
 
 Copy the serializer configuration output from Step 5 and enter it in the `cache.xml` file as follows.  
@@ -311,26 +316,26 @@ Copy the serializer configuration output from Step 5 and enter it in the `cache.
 ...
     <serialization-registration>
         <serializer>
-            <class-name>org.apache.geode.demo.data.avro.KryoSerializer</class-name>
+            <class-name>org.apache.geode.demo.nw.data.avro.KryoSerializer</class-name>
         </serializer>
     </serialization-registration>
 ...
 </cache>
 ```
 
-### 10. Start your cluster.
+### 10. Start your cluster
 
 ```bash
 start_cluster
 ```
 
-### 11. Ingest data.
+### 11. Ingest data
 
 The scripts for running the client code are in the `bin_sh` directory. The ingestion scripts use the `etc/client-cache.xml` file which already registers the `KyroSerializer` class. Let's execute them.
 
 ```bash
 # Ingest Customer and Order data
-cd bin_sh
+cd_app kryo_codegen; cd bin_sh
 
 # Ingest data into the 'nw/customers' map.
 ./ingest_customers
@@ -344,7 +349,7 @@ cd bin_sh
 ```
 Data Class: org.apache.geode.demo.nw.data.avro.Customer
   Ingested: 100
-       Map: nw/customers
+       Map: /nw/customers
 ```
 
 **`ingest_orders` Output:**
@@ -352,16 +357,91 @@ Data Class: org.apache.geode.demo.nw.data.avro.Customer
 ```
 Data Class: org.apache.geode.demo.nw.data.avro.Order
   Ingested: 100
-       Map: nw/orders
+       Map: /nw/orders
 ```
 
-### 12. Read ingested data.
+
+### 12. Read ingested data
 
 You can use the `read_cache` script to read the ingested data as follows. We have ingested data into the 'nw/customers' and 'nw/orders' maps.
 
 ```bash
-./read_cache nw/customers
-./read_cache nw/orders
+./read_cache /nw/customers
+./read_cache /nw/orders
+```
+
+## Ingesting Data into Pado Cluster
+
+1. You can also ingest data into Pado clusters. In Pado, the grid name serves as the top-level region. To ingest data into a Pado cluster, you must place all of your regions defined in `etc/client-cache.xml` under the top-level region named same as the grid name. For example, if you have a Pado cluster named `mypado` then you would place the data regions as follows.
+
+```bash
+# Edit client-cache.xml
+cd_app kryo_codegen
+vi etc/client-cache.xml
+```
+
+2. Place `mypado` as the top-level region in the `etc/client-cache.xml` file.
+
+```xml
+<region name="mypado">
+    <region name="nw" refid="clientAttributes">
+        <region name="categories" refid="clientAttributes"></region>
+        <region name="customers" refid="clientAttributes"></region>
+        <region name="employees" refid="clientAttributes"></region>
+        <region name="employee_territories" refid="clientAttributes"></region>
+        <region name="orders" refid="clientAttributes"></region>
+        <region name="order_details" refid="clientAttributes"></region>
+        <region name="products" refid="clientAttributes"></region>
+        <region name="regions" refid="clientAttributes"></region>
+        <region name="shippers" refid="clientAttributes"></region>
+        <region name="suppliers" refid="clientAttributes"></region>
+        <region name="territories" refid="clientAttributes"></region>
+    </region>
+</region>
+``` 
+
+3. To run the ingesters, you specify the grid name as follows.
+
+```bash
+# See usages
+./ingester_customers -?
+./ingester_orders -?
+
+# Ingest data into mypado
+./ingest_customers mypado
+./ingest_orders mypado
+```
+
+4. To use the Pado Desktop to browse the data, place the following `cache.xml` file in the the desktop's `etc/` directory. It is important that you must use `cache.xml`, not `client-cache.xml` since the desktop does not use the `ClientCache` API. 
+
+```bash
+# Create cache.xml. Note that it is not included in the desktop distribution.
+cd pado-desktop_2.*
+vi etc/cache.xml
+```
+
+Enter the following in `cache.xml`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<cache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://geode.apache.org/schema/cache"
+  xsi:schemaLocation="http://geode.apache.org/schema/cache http://geode.apache.org/schema/cache/cache-1.0.xsd"
+  version="1.0">
+     <serialization-registration>
+        <serializer>
+            <class-name>org.apache.geode.demo.nw.data.avro.KryoSerializer</class-name>
+        </serializer>
+      </serialization-registration>
+</cache>
+```
+
+5. Before running the desktop, set `USER_CLASSPATH` to the workspace `lib` to include the Kryo, Avro, and our generated classes.
+
+```bash
+export USER_CLASSPATH="$PADOGRID_WORKSPACE/lib/*"
+cd pado-desktop_2.*/bin_sh
+./desktop
 ```
 
 ## Executing Code Generator Programmatically 

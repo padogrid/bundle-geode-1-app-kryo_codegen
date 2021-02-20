@@ -32,4 +32,4 @@ fi
 # Application executable name. Useful for displaying usage.
 JAVA_OPTS="$JAVA_OPTS -Dexecutable.name=$EXECUTABLE"
 
-"$JAVA" $JAVA_OPTS org.apache.geode.addon.demo.kryo.OrderIngester $@ 2> $LOG_FILE
+"$JAVA" $JAVA_OPTS org.apache.geode.addon.demo.kryo.OrderIngester $@

@@ -12,6 +12,7 @@
 
 	<!-- Regions used by test_group -prop ../etc/group-factory.properties and 
 		the Pado app. -->
+    <region name="pado2">
 	<region name="nw" refid="clientAttributes">
 		<region name="categories" refid="clientAttributes"></region>
 		<region name="customers" refid="clientAttributes"></region>
@@ -25,6 +26,7 @@
 		<region name="suppliers" refid="clientAttributes"></region>
 		<region name="territories" refid="clientAttributes"></region>
 	</region>
+  </region>
 
       <serialization-registration>
         <serializer>
