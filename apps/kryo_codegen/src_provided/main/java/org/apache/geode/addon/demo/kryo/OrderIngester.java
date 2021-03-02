@@ -26,7 +26,7 @@ public class OrderIngester {
 		Company company = faker.company();
 		order.setCustomerId(faker.idNumber().invalidSvSeSsn());
 		order.setEmployeeId(faker.idNumber().invalidSvSeSsn());
-		order.setFreight(200 * random.nextDouble());
+		order.setFreight(Math.round(10000 * random.nextDouble())/100d);
 		order.setOrderDateObj(faker.date().past(7, TimeUnit.DAYS));
 		order.setOrderId(faker.idNumber().invalidSvSeSsn());
 		order.setRequiredDateObj(faker.date().future(20, TimeUnit.DAYS));
