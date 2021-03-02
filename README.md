@@ -337,10 +337,10 @@ The scripts for running the client code are in the `bin_sh` directory. The inges
 # Ingest Customer and Order data
 cd_app kryo_codegen; cd bin_sh
 
-# Ingest data into the 'nw/customers' map.
+# Ingest data into the '/nw/customers' region.
 ./ingest_customers
 
-# Ingest data into the 'nw/orders' map.
+# Ingest data into the '/nw/orders' region.
 ./ingest_orders
 ```
 
@@ -360,10 +360,9 @@ Data Class: org.apache.geode.demo.nw.data.avro.Order
        Map: /nw/orders
 ```
 
-
 ### 12. Read ingested data
 
-You can use the `read_cache` script to read the ingested data as follows. We have ingested data into the 'nw/customers' and 'nw/orders' maps.
+You can use the `read_cache` script to read the ingested data as follows. We have ingested data into the 'nw/customers' and '/nw/orders' regions.
 
 ```bash
 ./read_cache /nw/customers
