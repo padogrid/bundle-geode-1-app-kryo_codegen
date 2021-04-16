@@ -12,7 +12,7 @@
 
 	<!-- Regions used by test_group -prop ../etc/group-factory.properties and 
 		the Pado app. -->
-    <region name="pado2">
+		
 	<region name="nw" refid="clientAttributes">
 		<region name="categories" refid="clientAttributes"></region>
 		<region name="customers" refid="clientAttributes"></region>
@@ -26,13 +26,29 @@
 		<region name="suppliers" refid="clientAttributes"></region>
 		<region name="territories" refid="clientAttributes"></region>
 	</region>
-  </region>
 
-      <serialization-registration>
-        <serializer>
-          <class-name>
-            org.apache.geode.demo.nw.data.avro.KryoSerializer
-          </class-name>
-        </serializer>
-    </serialization-registration>
+	<region name="mypado">
+		<region name="nw" refid="clientAttributes">
+			<region name="categories" refid="clientAttributes"></region>
+			<region name="customers" refid="clientAttributes"></region>
+			<region name="employees" refid="clientAttributes"></region>
+			<region name="employee_territories" refid="clientAttributes"></region>
+			<region name="orders" refid="clientAttributes"></region>
+			<region name="order_details" refid="clientAttributes"></region>
+			<region name="products" refid="clientAttributes"></region>
+			<region name="regions" refid="clientAttributes"></region>
+			<region name="shippers" refid="clientAttributes"></region>
+			<region name="suppliers" refid="clientAttributes"></region>
+			<region name="territories" refid="clientAttributes"></region>
+		</region>
+	</region>
+
+
+	<serialization-registration>
+		<serializer>
+			<class-name>
+				org.apache.geode.demo.nw.data.avro.KryoSerializer
+			</class-name>
+		</serializer>
+	</serialization-registration>
 </client-cache>

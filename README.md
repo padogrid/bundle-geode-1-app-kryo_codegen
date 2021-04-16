@@ -52,7 +52,7 @@ public class Order extends org.apache.geode.demo.nw.data.avro.generated.__Order 
 - PadoGrid 0.9.5-SNAPSHOT+ (03/02/2021)
 - Maven 3.x
 
-## Runnig This Bundle
+## Running This Bundle
 
 If you want to quickly test the bundle, you can execute the following and jump to [Step 9](#9-configure-geodegemfire-configuration-file-cachexml-with-the-kryoserializer-class
 ). The `build_app` carries out the steps 1 to 8 in sequence. It is recommended, however, that you go through the entire steps to get familiar with the code generation and deployment process.
@@ -379,7 +379,7 @@ cd_app kryo_codegen
 vi etc/client-cache.xml
 ```
 
-2. Place `mypado` as the top-level region in the `etc/client-cache.xml` file.
+2. Place `mypado` as the top-level region in the `etc/client-cache.xml` file. Note that the accompanying client-cache.xml already has this configured.
 
 ```xml
 <region name="mypado">
