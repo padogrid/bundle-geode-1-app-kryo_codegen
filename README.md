@@ -54,6 +54,24 @@ public class Order extends org.apache.geode.demo.nw.data.avro.generated.__Order 
 
 ## Running This Bundle
 
+First, make sure you are switched into a Geode/GemFire cluster. You can create the default cluster by executing the following.
+
+Geode:
+
+```bash
+# Geode cluster - creates 'mygeode' cluster
+make_cluster -product geode
+switch_cluster mygeode
+```
+
+GemFire:
+
+```bash
+# GemFire cluster - creates 'mygemfire' cluster
+make_cluster -product gemfire
+switch_cluster mygemfire
+``` 
+
 If you want to quickly test the bundle, you can execute the following and jump to [Step 9](#9-configure-geodegemfire-configuration-file-cachexml-with-the-kryoserializer-class
 ). The `build_app` carries out the steps 1 to 8 in sequence. It is recommended, however, that you go through the entire steps to get familiar with the code generation and deployment process.
 
@@ -62,7 +80,7 @@ cd_app kryo_codegen; cd bin_sh
 ./build_app
 ```
 
-If you have a schema registry with Debezium running, then you can use the `-registry` option to retrieve the schemas instead. Please see the usage by running the following.
+If you have a schema registry running, then you can use the `-registry` option to retrieve the schemas instead. Please see the usage by running the following.
 
 ```bash
 ./build_app -?
@@ -304,8 +322,11 @@ tar -C $PADOGRID_WORKSPACE/plugins/ -xzf target/assembly/app-kryo-codegen-geode-
 Place the serialization information in the current cluster's Geode/GemFire configuration file.
 
 ```bash
-# Switch to your cluster. Default cluster is mygeode
-switch_cluster your_cluster
+# Create a Geode/GemFire cluster if you have not done so already
+make_cluster -product geode -cluster mygeode
+
+# Switch to your cluster and edit cache.xml
+switch_cluster mygeode
 vi etc/cache.xml
 ```
 
