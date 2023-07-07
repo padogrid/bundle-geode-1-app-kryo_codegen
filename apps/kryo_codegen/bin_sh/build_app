@@ -59,13 +59,7 @@ else
 fi
 
 # Install padogrid-tools to the local Maven repo
-mvn install:install-file \
-   -Dfile=$PADOGRID_HOME/lib/padogrid-tools-${PADOGRID_VERSION}.jar \
-   -DgroupId=padogrid.addon \
-   -DartifactId=padogrid-tools \
-   -Dversion=${PADOGRID_VERSION} \
-   -Dpackaging=jar \
-   -DgeneratePom=true
+installMavenPadogridJar padogrid-tools
 
 pushd $APP_DIR > /dev/null
 
@@ -115,7 +109,7 @@ cat <<EOF
 
 Workspace: $PADOGRID_WORKSPACE
 
-Avro classes, wrappter classes, and KryoSerializer generated and deployed to the workspace's
+Avro classes, wrapper classes, and KryoSerializer generated and deployed to the workspace's
 plugins directory.
 
    $PADOGRID_WORKSPACE/lib
