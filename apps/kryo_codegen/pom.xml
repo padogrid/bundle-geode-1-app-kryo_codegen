@@ -13,8 +13,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<padogrid.version>${env.PADOGRID_VERSION}</padogrid.version>
-		<geode.version>1.13.1</geode.version>
-		<avro.version>1.9.2</avro.version>
+		<geode.version>1.15.1</geode.version>
+		<avro.version>1.11.3</avro.version>
 	</properties>
 
 	<dependencies>

@@ -56,8 +56,8 @@ public class Order extends org.apache.geode.demo.nw.data.avro.generated.__Order 
 
 ## Required Software
 
-- PadoGrid 0.9.5-SNAPSHOT+ (03/02/2021)
 - Maven 3.x
+- Geode 1.x or GemFire 9.x/10.x
 
 ## Running This Bundle
 
@@ -67,7 +67,7 @@ Geode:
 
 ```bash
 # Geode cluster - creates 'mygeode' cluster
-make_cluster -product geode
+create_cluster -product geode
 switch_cluster mygeode
 ```
 
@@ -75,7 +75,7 @@ GemFire:
 
 ```bash
 # GemFire cluster - creates 'mygemfire' cluster
-make_cluster -product gemfire
+create_cluster -product gemfire
 switch_cluster mygemfire
 ``` 
 
@@ -83,7 +83,7 @@ If you want to quickly test the bundle, you can execute the following and jump t
 ). The `build_app` carries out the steps 1 to 8 in sequence. It is recommended, however, that you go through the entire steps to get familiar with the code generation and deployment process.
 
 ```bash
-cd_app kryo_codegen; cd bin_sh
+cd_app kryo_codegen/bin_sh
 ./build_app
 ```
 
@@ -306,12 +306,39 @@ This bundle includes data ingestion clients that use the generated wrapper class
 ```bash
 # Copy client code
 cp -r src_provided/* src/
+```
 
+The `src_provided` directory has the following files.
+
+```console
+src_provided/
+└── main
+    └── java
+        └── org
+            └── apache
+                └── geode
+                    ├── addon
+                    │   └── demo
+                    │       └── kryo
+                    │           ├── CustomerIngester.java
+                    │           ├── MyKryoGenerator.java
+                    │           ├── MyWrapperGenerator.java
+                    │           └── OrderIngester.java
+                    └── demo
+                        └── nw
+                            └── data
+                                └── avro
+                                    └── Order.java
+```
+
+Rebuild the package.
+
+```bash
 # Rebuild
 mvn package
 ```
 
-:information_source: Take a look at `src_provided/org/apache/geode/demo/nw/data/avro/Order.java`. It extends the Avro generated class `__Order` to include `Date` objects.
+:information_source: Take a look at `src_provided/main/java/org/apache/geode/demo/nw/data/avro/Order.java`. It extends the Avro generated class `__Order` to include `Date` objects.
 
 ### 8. Build and deploy a distribution tarball
 
@@ -330,7 +357,7 @@ Place the serialization information in the current cluster's Geode/GemFire confi
 
 ```bash
 # Create a Geode/GemFire cluster if you have not done so already
-make_cluster -product geode -cluster mygeode
+create_cluster -product geode -cluster mygeode
 
 # Switch to your cluster and edit cache.xml
 switch_cluster mygeode
@@ -363,7 +390,7 @@ The scripts for running the client code are in the `bin_sh` directory. The inges
 
 ```bash
 # Ingest Customer and Order data
-cd_app kryo_codegen; cd bin_sh
+cd_app kryo_codegen/bin_sh
 
 # Ingest data into the '/nw/customers' region.
 ./ingest_customers
@@ -395,80 +422,6 @@ You can use the `read_cache` script to read the ingested data as follows. We hav
 ```bash
 ./read_cache /nw/customers
 ./read_cache /nw/orders
-```
-
-## Ingesting Data into Pado Cluster
-
-1. You can also ingest data into Pado clusters. In Pado, the grid name serves as the top-level region. To ingest data into a Pado cluster, you must place all of your regions defined in `etc/client-cache.xml` under the top-level region named same as the grid name. For example, if you have a Pado cluster named `mypado` then you would place the data regions as follows.
-
-```bash
-# Edit client-cache.xml
-cd_app kryo_codegen
-vi etc/client-cache.xml
-```
-
-2. Place `mypado` as the top-level region in the `etc/client-cache.xml` file. Note that the accompanying client-cache.xml already has this configured.
-
-```xml
-<region name="mypado">
-    <region name="nw" refid="clientAttributes">
-        <region name="categories" refid="clientAttributes"></region>
-        <region name="customers" refid="clientAttributes"></region>
-        <region name="employees" refid="clientAttributes"></region>
-        <region name="employee_territories" refid="clientAttributes"></region>
-        <region name="orders" refid="clientAttributes"></region>
-        <region name="order_details" refid="clientAttributes"></region>
-        <region name="products" refid="clientAttributes"></region>
-        <region name="regions" refid="clientAttributes"></region>
-        <region name="shippers" refid="clientAttributes"></region>
-        <region name="suppliers" refid="clientAttributes"></region>
-        <region name="territories" refid="clientAttributes"></region>
-    </region>
-</region>
-``` 
-
-3. To run the ingesters, you specify the grid name as follows.
-
-```bash
-# See usages
-./ingester_customers -?
-./ingester_orders -?
-
-# Ingest data into mypado
-./ingest_customers mypado
-./ingest_orders mypado
-```
-
-4. To use the Pado Desktop to browse the data, place the following `cache.xml` file in the the desktop's `etc/` directory. It is important that you must use `cache.xml`, not `client-cache.xml` since the desktop does not use the `ClientCache` API. 
-
-```bash
-# Create cache.xml. Note that it is not included in the desktop distribution.
-cd pado-desktop_2.*
-vi etc/cache.xml
-```
-
-Enter the following in `cache.xml`
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<cache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://geode.apache.org/schema/cache"
-  xsi:schemaLocation="http://geode.apache.org/schema/cache http://geode.apache.org/schema/cache/cache-1.0.xsd"
-  version="1.0">
-     <serialization-registration>
-        <serializer>
-            <class-name>org.apache.geode.demo.nw.data.avro.KryoSerializer</class-name>
-        </serializer>
-      </serialization-registration>
-</cache>
-```
-
-5. Before running the desktop, set `USER_CLASSPATH` to the workspace `lib` to include the Kryo, Avro, and our generated classes.
-
-```bash
-export USER_CLASSPATH="$PADOGRID_WORKSPACE/lib/*"
-cd pado-desktop_2.*/bin_sh
-./desktop
 ```
 
 ## Executing Code Generator Programmatically 
@@ -537,7 +490,7 @@ public class MyKryoGenerator {
 ## Teardown
 
 ```bash
-stop_cluster
+stop_cluster -all
 ```
 
 ---
