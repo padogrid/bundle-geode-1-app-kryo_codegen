@@ -3,7 +3,7 @@
 ---
 
 <!-- Platforms -->
-[![Host OS](https://github.com/padogrid/padogrid/wiki/images/padogrid-host-os.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-Host-OS) [![VM](https://github.com/padogrid/padogrid/wiki/images/padogrid-vm.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-VM) [![Docker](https://github.com/padogrid/padogrid/wiki/images/padogrid-docker.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-Docker) [![Kubernetes](https://github.com/padogrid/padogrid/wiki/images/padogrid-kubernetes.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-Kubernetes)
+[![PadoGrid 1.x](https://github.com/padogrid/padogrid/wiki/images/padogrid-padogrid-1.x.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-PadoGrid-1.x) [![Host OS](https://github.com/padogrid/padogrid/wiki/images/padogrid-host-os.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-Host-OS) [![VM](https://github.com/padogrid/padogrid/wiki/images/padogrid-vm.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-VM) [![Docker](https://github.com/padogrid/padogrid/wiki/images/padogrid-docker.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-Docker) [![Kubernetes](https://github.com/padogrid/padogrid/wiki/images/padogrid-kubernetes.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-Kubernetes)
 
 # Geode/GemFire Kryo Code Generator
 
@@ -59,6 +59,28 @@ public class Order extends org.apache.geode.demo.nw.data.avro.generated.__Order 
 - Maven 3.x
 - Geode 1.x or GemFire 9.x/10.x
 
+## Configuring Bundle Environment
+
+Make sure you have all the required products installed.
+
+```bash
+# To use Geode:
+install_padogrid -product geode
+update_padogrid -product geode
+
+# To use GemFire:
+# GemFire must be downloaded manually from the their website.
+# The install_padogrid usage provides the download link.
+install_padogrid -?
+# Upon download, install it in $PADOGRID_ENV_BASE_PATH/products directory.
+# For example, the following installs GemFire 10.1.0.
+tar -C $PADOGRID_ENV_BASE_PATH/products -xzf ~/Downloads/vmware-gemfire-10.1.0.tgz
+# Update the workspace environment with the installed GemFire version.
+update_padogrid -product gemfire
+```
+
+        
+
 ## Running This Bundle
 
 First, make sure you are switched into a Geode/GemFire cluster. You can create the default cluster by executing the following.
@@ -79,21 +101,7 @@ create_cluster -product gemfire
 switch_cluster mygemfire
 ``` 
 
-If you want to quickly test the bundle, you can execute the following and jump to [Step 9](#9-configure-geodegemfire-configuration-file-cachexml-with-the-kryoserializer-class
-). The `build_app` carries out the steps 1 to 8 in sequence. It is recommended, however, that you go through the entire steps to get familiar with the code generation and deployment process.
-
-```bash
-cd_app kryo_codegen/bin_sh
-./build_app
-```
-
-If you have a schema registry running, then you can use the `-registry` option to retrieve the schemas instead. Please see the usage by running the following.
-
-```bash
-./build_app -?
-```
-
-:exclamation: You can also ingest data into a Pado cluster. Please see the section [Ingesting Data into Pado Cluster](#ingesting-data-into-pado-cluster) for details. With data in Pado, you can use the Pado Desktop to browse data.
+✏️  If you want to quickly test the bundle, you can jump to [Step 9](#9-configure-geodegemfire-configuration-file-cachexml-with-the-kryoserializer-class). It is recommended, however, that you go through the entire steps to get familiar with the code generation and deployment process.
 
 ### 1. Place Avro schema files in the `src/main/resources` directory
 
@@ -149,6 +157,7 @@ Note that we do not have any Java code in the source directory. We start with a 
 ### 2. Generate Avro classes using the Avro schema files
 
 ```bash
+cd_app kryo_codegen
 mvn package
 ```
 
@@ -184,6 +193,7 @@ lib
 Run the PadoGrid's `t_generate_wrappers` command to generate the wrapper classes that extend the generated Avro classes. You can use the Avro classes that were generated in the previous setp as they are but it is recommended that you generate the wrapper classes so that you can override the Avro class methods as needed. Let's generate wrapper classes by executing the following:
 
 ```bash
+cd_app kryo_codegen
 t_generate_wrappers -sp org.apache.geode.demo.nw.data.avro.generated \
    -tp org.apache.geode.demo.nw.data.avro \
    -dir src/main/java \
@@ -224,6 +234,7 @@ src/main
 The generated wrapper classes need to be compiled and packaged into a jar file. Run Maven again to generate the `lib/app-kryo-codegen-geode-1.0.0.jar` file that includes the wrapper classes.
 
 ```bash
+cd_app kryo_codegen
 mvn package
 ```
 
@@ -232,6 +243,7 @@ mvn package
 With the wrapper classes in the jar file, we can now generate the `KyroSerializer` class that properly registers all the wrapper classes in Geode/GemFire. Execute the following command to generate `KryoSerializer`.
 
 ```bash
+cd_app kryo_codegen
 t_generate_kryo_serializer -id 1200 \
    -package org.apache.geode.demo.nw.data.avro \
    -dir src/main/java \
@@ -296,6 +308,7 @@ src/main
 Once again, repackage the `lib/app-kryo-codegen-geode-1.0.0.jar` file by running Maven. At this time, the jar file also includes the generated classes including `KryoSerializer` which we need to register with Geode/GemFire.
 
 ```bash
+cd_app kryo_codegen
 mvn package
 ```
 
@@ -305,6 +318,7 @@ This bundle includes data ingestion clients that use the generated wrapper class
 
 ```bash
 # Copy client code
+cd_app kryo_codegen
 cp -r src_provided/* src/
 ```
 
@@ -335,6 +349,7 @@ Rebuild the package.
 
 ```bash
 # Rebuild
+cd_app kryo_codegen
 mvn package
 ```
 
@@ -346,6 +361,7 @@ The  `lib/app-kryo-codegen-geode-1.0.0.jar` is now ready to be deployed to the G
 
 ```bash
 # Deploy the generated tarball in the workspace plugins directory.
+cd_app kryo_codegen
 tar -C $PADOGRID_WORKSPACE/plugins/ -xzf target/assembly/app-kryo-codegen-geode-1.0.0.tar.gz
 ```
 
@@ -353,7 +369,20 @@ tar -C $PADOGRID_WORKSPACE/plugins/ -xzf target/assembly/app-kryo-codegen-geode-
 
 ### 9. Configure Geode/GemFire configuration file (`cache.xml`) with the `KryoSerializer` class
 
-Place the serialization information in the current cluster's Geode/GemFire configuration file.
+If you have skipped Steps 1-8, then you can run the `build_app` script, which carries out the Steps 1 to 8 in sequence. 
+
+```bash
+cd_app kryo_codegen/bin_sh
+./build_app
+```
+
+If you have a schema registry running, then you can use the `-registry` option to retrieve the schemas instead. Please see the usage by running the following.
+
+```bash
+./build_app -?
+```
+
+Once you have either executed `build_app` or carried out Steps 1-8 individually, place the serialization information in the current cluster's Geode/GemFire configuration file.
 
 ```bash
 # Create a Geode/GemFire cluster if you have not done so already

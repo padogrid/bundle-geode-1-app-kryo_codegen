@@ -31,8 +31,6 @@ fi
 
 JAVA_ARGS="-DgemfirePropertyFile=$GEMFIRE_PROPERTY_FILE \
     -Dgemfire.cache-xml-file=$GEODE_CLIENT_CONFIG_FILE"
-echo CLASSPATH=$CLASSPATH
-echo "JAVA_ARGS=$JAVA_ARGS"
 export JAVA_ARGS="$JAVA_ARGS -Dgfsh.log-level=info -Dgfsh.log-dir=$LOG_DIR"
 
 gfsh

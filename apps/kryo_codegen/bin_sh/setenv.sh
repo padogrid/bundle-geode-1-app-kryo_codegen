@@ -38,4 +38,12 @@ JAVA_OPTS="-Xms512m -Xmx512m"
 JAVA_OPTS="$JAVA_OPTS -DgemfirePropertyFile=$GEMFIRE_PROPERTY_FILE \
     -Dgemfire.cache-xml-file=$GEODE_CLIENT_CONFIG_FILE"
 
+# Add log4j which was taken out by the main .addonenv.sh to prevent jar conflicts
+# for running clusters. The commands in tools do not have cluster dependencies.
+for i in $PADOGRID_HOME/lib/*; do
+  if [[ "$i" != *"slf4j"* ]] && [[ "$i" == *"log4j"* ]]; then
+     CLASSPATH="$CLASSPATH:$i"
+  fi
+done
+
 CLASSPATH="$APP_DIR/lib/*:$CLASSPATH"
